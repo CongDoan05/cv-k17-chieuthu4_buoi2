@@ -8,7 +8,8 @@ recog_tool = cv.face.LBPHFaceRecognizer_create()
 recog_tool.read("face_recognizer_model.yml") #đọc mô hình đã huấn luyện
 label_dict = np.load("label_dict.npy", allow_pickle=True).item()
 face_cascade = cv.CascadeClassifier(cv.data.haarcascades + "haarcascade_frontalface_default.xml")   
-      
+
+# Đường dẫn đến thư mục chứa dữ liệu
 dataset_path = "data"
 
 AUTHORIZED_USERS = [
@@ -17,6 +18,7 @@ AUTHORIZED_USERS = [
 ]
 print("Danh sach user:", AUTHORIZED_USERS)
 
+# Hàm gửi email thông báo khi mở khóa thành công
 def send_email_notification(user):
     try:
         msg = MIMEText(f"User {user} đã được mở khóa.")
@@ -33,7 +35,10 @@ def send_email_notification(user):
 
     except Exception as e:
         print("Loi gui email:", e)
+# Biến để theo dõi trạng thái đã gửi email hay chưa
 email_sent = False
+
+
 cap = cv.VideoCapture(0)
 while True:
     ret, frame = cap.read()
@@ -52,7 +57,7 @@ while True:
             if dotincay < 80: #ngưỡng để xác định có nhận diện
                 name = label_dict[name]
                 color = (0, 255, 0)
-                
+                # Chỉ gửi email khi người được nhận diện là người có trong danh sách và chưa gửi email trước đó
                 if name in AUTHORIZED_USERS and not email_sent:
                     print("Mo khoa:", name)
                     send_email_notification(name)
